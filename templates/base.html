@@ -1,0 +1,108 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ SITE_NAME }} — {{ SITE_TAGLINE }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Find your next home with {{ SITE_NAME }}. Browse houses, apartments, plots, and commercial properties for sale or rent.{% endblock %}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="{% url 'properties:home' %}" class="brand">
+        <svg class="brand-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="18" width="34" height="19" fill="none" stroke="#B8924A" stroke-width="1.6"/>
+          <path d="M3 18 L20 4 L37 18" fill="none" stroke="#B8924A" stroke-width="1.6" stroke-linejoin="round"/>
+          <rect x="17" y="25" width="6" height="12" fill="#B8924A"/>
+          <line x1="9" y1="24" x2="9" y2="31" stroke="#FAF7F0" stroke-width="1.2"/>
+          <line x1="30" y1="24" x2="30" y2="31" stroke="#FAF7F0" stroke-width="1.2"/>
+        </svg>
+        <span>
+          <span class="brand-name">Legacy Estates</span>
+          <span class="brand-tagline">Est. Trust &middot; Modern Living</span>
+        </span>
+      </a>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+
+      <nav class="main-nav" id="mainNav">
+        <ul class="nav-links">
+          <li><a href="{% url 'properties:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+          <li><a href="{% url 'properties:list' %}" class="{% if request.resolver_match.url_name == 'list' %}active{% endif %}">Listings</a></li>
+          <li><a href="{% url 'accounts:agent_list' %}" class="{% if 'agent' in request.resolver_match.url_name|default:'' %}active{% endif %}">Agents</a></li>
+          <li><a href="{% url 'inquiries:contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a></li>
+        </ul>
+        <div class="nav-actions">
+          {% if user.is_authenticated %}
+            <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-light btn-sm">Dashboard</a>
+            <a href="{% url 'accounts:logout' %}" class="btn btn-brass btn-sm">Log Out</a>
+          {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-sm">Agent Login</a>
+          {% endif %}
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    {% if messages %}
+      <div class="container" style="padding-top: 1.5rem;">
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4 style="font-family: var(--font-display); font-size: 1.3rem; text-transform: none; letter-spacing: 0; color: var(--ivory);">Legacy Estates</h4>
+          <p style="color: rgba(250,247,240,0.6); font-size: 0.9rem; max-width: 280px;">
+            Helping families and businesses find property they can build a future on — for sale or for rent, across every neighborhood we serve.
+          </p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="{% url 'properties:list' %}?listing_type=sale">Homes for Sale</a></li>
+            <li><a href="{% url 'properties:list' %}?listing_type=rent">Homes for Rent</a></li>
+            <li><a href="{% url 'properties:list' %}?property_type=commercial">Commercial</a></li>
+            <li><a href="{% url 'accounts:agent_list' %}">Our Agents</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="{% url 'inquiries:contact' %}">Contact Us</a></li>
+            <li><a href="{% url 'accounts:login' %}">Agent Login</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Get in Touch</h4>
+          <ul>
+            <li>info@legacyestates.com</li>
+            <li>(555) 010-2030</li>
+            <li>123 Heritage Ave, Suite 400</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; {% now "Y" %} Legacy Estates. All rights reserved.</span>
+        <span>Property, held to a higher standard.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

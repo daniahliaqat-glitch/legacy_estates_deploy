@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Dashboard — {{ SITE_NAME }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">{% endblock %}
+
+{% block content %}
+  <section class="dash-header">
+    <div class="container flex-between">
+      <div>
+        <span class="eyebrow" style="color:var(--brass-light);">
+          {% if agent %}Agent Dashboard{% else %}Admin Dashboard{% endif %}
+        </span>
+        <h1 style="color:var(--ivory);margin-bottom:0;">
+          Welcome back{% if agent %}, {{ agent.user.first_name|default:agent.user.username }}{% endif %}
+        </h1>
+      </div>
+      <a href="{% url 'accounts:property_create' %}" class="btn btn-brass">+ Add New Listing</a>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-card">
+        <strong>{{ stats.total }}</strong>
+        <span>Total Listings</span>
+      </div>
+      <div class="stat-card">
+        <strong>{{ stats.available }}</strong>
+        <span>Available</span>
+      </div>
+      <div class="stat-card">
+        <strong>{{ stats.pending }}</strong>
+        <span>Pending</span>
+      </div>
+      <div class="stat-card">
+        <strong>{{ stats.sold_or_rented }}</strong>
+        <span>Sold / Rented</span>
+      </div>
+    </div>
+
+    <h2 style="margin-top: var(--space-5);">Your Listings</h2>
+
+    {% if page_obj.object_list %}
+      <div class="dash-table-wrap">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Listed</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for property in page_obj %}
+              <tr>
+                <td>
+                  <div class="dash-prop-cell">
+                    {% with img=property.primary_image %}
+                      {% if img %}
+                        <img src="{{ img.image.url }}" alt="">
+                      {% else %}
+                        <div class="dash-prop-noimg"></div>
+                      {% endif %}
+                    {% endwith %}
+                    <div>
+                      <a href="{{ property.get_absolute_url }}" style="font-weight:600;">{{ property.title }}</a>
+                      <div style="font-size:0.8rem;color:var(--slate);">{{ property.city }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ property.get_property_type_display }} &middot; {{ property.get_listing_type_display }}</td>
+                <td>${{ property.price|floatformat:0|intcomma }}{% if property.is_for_rent %}/mo{% endif %}</td>
+                <td><span class="pill pill-{{ property.status }}">{{ property.get_status_display }}</span></td>
+                <td>{{ property.created_at|date:"M d, Y" }}</td>
+                <td class="dash-actions">
+                  <a href="{% url 'accounts:property_edit' property.pk %}" class="btn btn-outline btn-sm">Edit</a>
+                  <a href="{% url 'accounts:property_delete' property.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+          {% endif %}
+          <span class="current">{{ page_obj.number }}</span>
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+    {% else %}
+      <div class="empty-state">
+        <h3>You haven't listed any properties yet</h3>
+        <p>Get started by adding your first listing.</p>
+        <a href="{% url 'accounts:property_create' %}" class="btn btn-primary">+ Add New Listing</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

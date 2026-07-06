@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if is_edit %}Edit Listing{% else %}Add New Listing{% endif %} — {{ SITE_NAME }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">{% endblock %}
+
+{% block content %}
+  <section class="dash-header">
+    <div class="container">
+      <span class="eyebrow" style="color:var(--brass-light);">
+        {% if is_edit %}Editing{% else %}New Listing{% endif %}
+      </span>
+      <h1 style="color:var(--ivory);margin-bottom:0;">
+        {% if is_edit %}{{ property.title }}{% else %}Add New Property{% endif %}
+      </h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width: 800px;">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <h3>Basic Information</h3>
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          {{ form.title }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          {{ form.description }}
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Property Type</label>
+            {{ form.property_type }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Listing Type</label>
+            {{ form.listing_type }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            {{ form.status }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price {% if not is_edit %}(monthly if for rent){% endif %}</label>
+            {{ form.price }}
+          </div>
+        </div>
+
+        <h3>Location</h3>
+        <div class="form-group">
+          <label class="form-label">Address</label>
+          {{ form.address_line }}
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            {{ form.city }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">State</label>
+            {{ form.state }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Zip Code</label>
+            {{ form.zip_code }}
+          </div>
+        </div>
+
+        <h3>Specifications</h3>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Bedrooms</label>
+            {{ form.bedrooms }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bathrooms</label>
+            {{ form.bathrooms }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Area (sqft)</label>
+            {{ form.area_sqft }}
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Lot Size (sqft)</label>
+            {{ form.lot_size_sqft }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Year Built</label>
+            {{ form.year_built }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Parking Spaces</label>
+            {{ form.parking_spaces }}
+          </div>
+        </div>
+
+        <h3>Features</h3>
+        <div class="form-group checkbox-group">
+          {{ form.features }}
+        </div>
+
+        <h3>Photo</h3>
+        <div class="form-group">
+          <label class="form-label">{% if is_edit %}Add a photo{% else %}Cover photo{% endif %}</label>
+          {{ image_form.image }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Caption (optional)</label>
+          {{ image_form.caption }}
+        </div>
+
+        <div class="form-group" style="margin-top: var(--space-2);">
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;color:var(--slate);">
+            {{ form.is_featured }} Feature this property on the homepage
+          </label>
+        </div>
+
+        <div class="flex gap-2" style="margin-top: var(--space-4);">
+          <button type="submit" class="btn btn-primary">
+            {% if is_edit %}Save Changes{% else %}Create Listing{% endif %}
+          </button>
+          <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endblock %}

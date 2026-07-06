@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Our Agents — {{ SITE_NAME }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/home.css' %}">{% endblock %}
+
+{% block content %}
+  <section class="listing-header">
+    <div class="container">
+      <span class="eyebrow">Meet The Team</span>
+      <h1>Our Agents</h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      {% if agents %}
+        <div class="agent-grid">
+          {% for agent in agents %}
+            <a href="{% url 'accounts:agent_detail' agent.pk %}" class="agent-card">
+              {% if agent.headshot %}
+                <img src="{{ agent.headshot.url }}" alt="{{ agent }}" class="agent-photo">
+              {% else %}
+                <div class="agent-photo"></div>
+              {% endif %}
+              <h4>{{ agent.user.get_full_name|default:agent.user.username }}</h4>
+              <div class="agent-title">{{ agent.title }}</div>
+              <div class="agent-meta">{{ agent.years_experience }} yrs experience &middot; {{ agent.active_listing_count }} listings</div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <h3>No agents listed yet</h3>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

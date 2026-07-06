@@ -1,0 +1,31 @@
+{% load humanize %}
+<div class="property-card">
+  <div class="card-media">
+    <a href="{{ property.get_absolute_url }}">
+      {% with img=property.primary_image %}
+        {% if img %}
+          <img src="{{ img.image.url }}" alt="{{ property.title }}" loading="lazy">
+        {% else %}
+          <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--slate-light);font-size:0.85rem;">
+            No photo available
+          </div>
+        {% endif %}
+      {% endwith %}
+    </a>
+    <span class="card-badge {% if property.is_for_rent %}rent{% endif %}">
+      {% if property.is_for_rent %}For Rent{% else %}For Sale{% endif %}
+    </span>
+    <div class="card-price-tag">
+      ${{ property.price|floatformat:0|intcomma }}{% if property.is_for_rent %}<span>/mo</span>{% endif %}
+    </div>
+  </div>
+  <div class="card-body">
+    <h3><a href="{{ property.get_absolute_url }}">{{ property.title }}</a></h3>
+    <div class="card-location">📍 {{ property.city }}{% if property.state %}, {{ property.state }}{% endif %}</div>
+    <div class="card-specs">
+      {% if property.bedrooms %}<span><strong>{{ property.bedrooms }}</strong> bd</span>{% endif %}
+      {% if property.bathrooms %}<span><strong>{{ property.bathrooms }}</strong> ba</span>{% endif %}
+      <span><strong>{{ property.area_sqft|intcomma }}</strong> sqft</span>
+    </div>
+  </div>
+</div>

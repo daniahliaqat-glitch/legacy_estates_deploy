@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contact Us — {{ SITE_NAME }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/auth.css' %}">{% endblock %}
+
+{% block content %}
+  <section class="listing-header" style="background: var(--ink);">
+    <div class="container">
+      <span class="eyebrow">Get In Touch</span>
+      <h1 style="color: var(--ivory);">Contact Legacy Estates</h1>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="display:grid;grid-template-columns:1fr 1.3fr;gap:var(--space-5);max-width:1000px;">
+      <div>
+        <h3>Visit Us</h3>
+        <p>123 Heritage Ave, Suite 400<br>Metro City, ST 00000</p>
+
+        <h3 style="margin-top:var(--space-3);">Call Us</h3>
+        <p>(555) 010-2030</p>
+
+        <h3 style="margin-top:var(--space-3);">Email Us</h3>
+        <p>info@legacyestates.com</p>
+
+        <h3 style="margin-top:var(--space-3);">Office Hours</h3>
+        <p>Mon – Fri: 9am – 6pm<br>Sat: 10am – 4pm<br>Sun: Closed</p>
+      </div>
+
+      <div class="auth-card" style="box-shadow:none;border:1px solid var(--line);">
+        <h3 style="margin-top:0;">Send Us a Message</h3>
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Name</label>
+              {{ form.name }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              {{ form.email }}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Phone (optional)</label>
+              {{ form.phone }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject</label>
+              {{ form.subject }}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            {{ form.message }}
+          </div>
+          <button type="submit" class="btn btn-brass btn-block">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Browse Listings — {{ SITE_NAME }}{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/listing.css' %}">
+{% endblock %}
+
+{% block content %}
+  <section class="listing-header">
+    <div class="container">
+      <span class="eyebrow">{{ result_count }} Properties Found</span>
+      <h1>Browse Listings</h1>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="listing-layout">
+
+      <aside class="filter-panel">
+        <form method="get" id="filterForm">
+          <h4 style="margin-bottom: var(--space-2);">Filter Results</h4>
+
+          <div class="form-group">
+            <label class="form-label">Keyword</label>
+            <input type="text" name="q" class="form-input" placeholder="City, address, zip..." value="{{ request_get.q }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Listing Type</label>
+            <select name="listing_type" class="form-input">
+              <option value="">Any</option>
+              {% for value, label in listing_types %}
+                <option value="{{ value }}" {% if request_get.listing_type == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Property Type</label>
+            <select name="property_type" class="form-input">
+              <option value="">Any</option>
+              {% for value, label in property_types %}
+                <option value="{{ value }}" {% if request_get.property_type == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Price Range</label>
+            <div class="form-row">
+              <input type="number" name="min_price" class="form-input" placeholder="Min" value="{{ request_get.min_price }}">
+              <input type="number" name="max_price" class="form-input" placeholder="Max" value="{{ request_get.max_price }}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Bedrooms (min)</label>
+            <select name="bedrooms" class="form-input">
+              <option value="">Any</option>
+              <option value="1" {% if request_get.bedrooms == "1" %}selected{% endif %}>1+</option>
+              <option value="2" {% if request_get.bedrooms == "2" %}selected{% endif %}>2+</option>
+              <option value="3" {% if request_get.bedrooms == "3" %}selected{% endif %}>3+</option>
+              <option value="4" {% if request_get.bedrooms == "4" %}selected{% endif %}>4+</option>
+              <option value="5" {% if request_get.bedrooms == "5" %}selected{% endif %}>5+</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input type="text" name="city" class="form-input" placeholder="e.g. Lahore" value="{{ request_get.city }}">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
+          <a href="{% url 'properties:list' %}" class="btn btn-outline btn-block" style="margin-top: 0.6rem;">Clear All</a>
+        </form>
+      </aside>
+
+      <div class="listing-results">
+        <div class="results-toolbar">
+          <span>{{ result_count }} result{{ result_count|pluralize }}</span>
+          <form method="get" id="sortForm">
+            {% for key, value in request_get.items %}
+              {% if key != 'sort' and key != 'page' %}
+                <input type="hidden" name="{{ key }}" value="{{ value }}">
+              {% endif %}
+            {% endfor %}
+            <select name="sort" class="form-input" onchange="document.getElementById('sortForm').submit()" style="width: auto;">
+              <option value="-created_at" {% if request_get.sort == '-created_at' or not request_get.sort %}selected{% endif %}>Newest First</option>
+              <option value="price" {% if request_get.sort == 'price' %}selected{% endif %}>Price: Low to High</option>
+              <option value="-price" {% if request_get.sort == '-price' %}selected{% endif %}>Price: High to Low</option>
+              <option value="-area_sqft" {% if request_get.sort == '-area_sqft' %}selected{% endif %}>Largest Area</option>
+            </select>
+          </form>
+        </div>
+
+        {% if page_obj.object_list %}
+          <div class="property-grid">
+            {% for property in page_obj %}
+              {% include "properties/_property_card.html" %}
+            {% endfor %}
+          </div>
+
+          {% if page_obj.paginator.num_pages > 1 %}
+            <div class="pagination">
+              {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}&{{ request_get.urlencode }}">&laquo;</a>
+              {% else %}
+                <span class="disabled">&laquo;</span>
+              {% endif %}
+
+              {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                  <span class="current">{{ num }}</span>
+                {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                  <a href="?page={{ num }}&{{ request_get.urlencode }}">{{ num }}</a>
+                {% endif %}
+              {% endfor %}
+
+              {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&{{ request_get.urlencode }}">&raquo;</a>
+              {% else %}
+                <span class="disabled">&raquo;</span>
+              {% endif %}
+            </div>
+          {% endif %}
+
+        {% else %}
+          <div class="empty-state">
+            <h3>No properties match your search</h3>
+            <p>Try adjusting your filters or clearing them to see all available listings.</p>
+            <a href="{% url 'properties:list' %}" class="btn btn-outline">Clear Filters</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

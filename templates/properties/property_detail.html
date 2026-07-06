@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}{{ property.title }} — {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}{{ property.description|truncatewords:30 }}{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+{% endblock %}
+
+{% block content %}
+
+  <div class="container detail-wrap">
+
+    <div class="breadcrumb">
+      <a href="{% url 'properties:home' %}">Home</a> /
+      <a href="{% url 'properties:list' %}">Listings</a> /
+      <span>{{ property.title }}</span>
+    </div>
+
+    <div class="detail-gallery">
+      {% with images=property.images.all %}
+        {% if images %}
+          <div class="gallery-main">
+            <img src="{{ images.0.image.url }}" alt="{{ property.title }}" id="mainImage">
+          </div>
+          {% if images|length > 1 %}
+            <div class="gallery-thumbs">
+              {% for img in images %}
+                <img src="{{ img.image.url }}" alt="{{ img.caption|default:property.title }}"
+                     class="gallery-thumb {% if forloop.first %}active{% endif %}"
+                     onclick="document.getElementById('mainImage').src=this.src; document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.remove('active')); this.classList.add('active');">
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="gallery-main gallery-empty">No photos available</div>
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <div class="detail-layout">
+      <div class="detail-main">
+
+        <div class="detail-title-row">
+          <div>
+            <span class="card-badge {% if property.is_for_rent %}rent{% endif %}" style="position:static;display:inline-block;margin-bottom:0.6rem;">
+              {% if property.is_for_rent %}For Rent{% else %}For Sale{% endif %}
+            </span>
+            <h1>{{ property.title }}</h1>
+            <p class="detail-address">📍 {{ property.full_address }}</p>
+          </div>
+          <div class="detail-price">
+            ${{ property.price|floatformat:0|intcomma }}{% if property.is_for_rent %}<span>/month</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="spec-grid">
+          {% if property.bedrooms %}
+            <div class="spec-box"><strong>{{ property.bedrooms }}</strong><span>Bedrooms</span></div>
+          {% endif %}
+          {% if property.bathrooms %}
+            <div class="spec-box"><strong>{{ property.bathrooms }}</strong><span>Bathrooms</span></div>
+          {% endif %}
+          <div class="spec-box"><strong>{{ property.area_sqft|intcomma }}</strong><span>Sq Ft</span></div>
+          {% if property.lot_size_sqft %}
+            <div class="spec-box"><strong>{{ property.lot_size_sqft|intcomma }}</strong><span>Lot Sq Ft</span></div>
+          {% endif %}
+          {% if property.year_built %}
+            <div class="spec-box"><strong>{{ property.year_built }}</strong><span>Year Built</span></div>
+          {% endif %}
+          <div class="spec-box"><strong>{{ property.parking_spaces }}</strong><span>Parking</span></div>
+        </div>
+
+        <h3>Description</h3>
+        <p class="detail-description">{{ property.description|linebreaksbr }}</p>
+
+        {% if property.features.all %}
+          <h3>Features &amp; Amenities</h3>
+          <div class="feature-tags">
+            {% for feature in property.features.all %}
+              <span class="feature-tag">✓ {{ feature.name }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <h3>Property Details</h3>
+        <table class="detail-table">
+          <tr><td>Property Type</td><td>{{ property.get_property_type_display }}</td></tr>
+          <tr><td>Listing Type</td><td>{{ property.get_listing_type_display }}</td></tr>
+          <tr><td>Status</td><td><span class="pill pill-{{ property.status }}">{{ property.get_status_display }}</span></td></tr>
+          <tr><td>City</td><td>{{ property.city }}</td></tr>
+          <tr><td>Listed On</td><td>{{ property.created_at|date:"M d, Y" }}</td></tr>
+        </table>
+      </div>
+
+      <aside class="detail-sidebar">
+        {% if property.agent %}
+          <div class="agent-contact-card">
+            <h4>Listing Agent</h4>
+            <div class="agent-contact-row">
+              {% if property.agent.headshot %}
+                <img src="{{ property.agent.headshot.url }}" alt="{{ property.agent }}" class="agent-photo" style="width:56px;height:56px;">
+              {% else %}
+                <div class="agent-photo" style="width:56px;height:56px;"></div>
+              {% endif %}
+              <div>
+                <strong>{{ property.agent.user.get_full_name|default:property.agent.user.username }}</strong>
+                <div style="font-size:0.82rem;color:var(--brass);">{{ property.agent.title }}</div>
+              </div>
+            </div>
+            <p style="font-size:0.85rem;margin-top:0.8rem;">📞 {{ property.agent.phone }}</p>
+            <a href="{% url 'accounts:agent_detail' property.agent.pk %}" class="btn btn-outline btn-block btn-sm">View Agent Profile</a>
+          </div>
+        {% endif %}
+
+        <div class="inquiry-card">
+          <h4>Interested in this property?</h4>
+          <p style="font-size:0.88rem;">Send a message and the agent will get back to you.</p>
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <label class="form-label">Name</label>
+              {{ form.name }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              {{ form.email }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              {{ form.phone }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              {{ form.message }}
+            </div>
+            <button type="submit" class="btn btn-brass btn-block">Send Inquiry</button>
+          </form>
+        </div>
+      </aside>
+    </div>
+
+    {% if similar_properties %}
+      <section class="section-tight">
+        <h2>Similar Properties in {{ property.city }}</h2>
+        <div class="property-grid">
+          {% for property in similar_properties %}
+            {% include "properties/_property_card.html" %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+  </div>
+
+{% endblock %}

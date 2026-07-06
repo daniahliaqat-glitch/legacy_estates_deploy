@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Agent Login — {{ SITE_NAME }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/auth.css' %}">{% endblock %}
+
+{% block content %}
+  <section class="auth-section">
+    <div class="auth-card">
+      <span class="eyebrow text-center" style="display:block;">Legacy Estates</span>
+      <h2 class="text-center">Agent &amp; Admin Login</h2>
+      <p class="text-center" style="margin-bottom: var(--space-3);">Sign in to manage your property listings.</p>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-input" required autofocus>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-input" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Log In</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

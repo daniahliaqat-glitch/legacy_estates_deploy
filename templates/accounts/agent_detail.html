@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ agent.user.get_full_name|default:agent.user.username }} — {{ SITE_NAME }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/detail.css' %}">{% endblock %}
+
+{% block content %}
+  <section class="section-tight" style="background: var(--ink); color: var(--ivory);">
+    <div class="container" style="display:flex;align-items:center;gap:var(--space-3);">
+      {% if agent.headshot %}
+        <img src="{{ agent.headshot.url }}" alt="{{ agent }}" class="agent-photo" style="width:96px;height:96px;border-color:var(--brass);">
+      {% else %}
+        <div class="agent-photo" style="width:96px;height:96px;"></div>
+      {% endif %}
+      <div>
+        <span class="eyebrow" style="color:var(--brass-light);">{{ agent.title }}</span>
+        <h1 style="color:var(--ivory);margin-bottom:0.3rem;">{{ agent.user.get_full_name|default:agent.user.username }}</h1>
+        <p style="color:rgba(250,247,240,0.7);margin-bottom:0;">📞 {{ agent.phone }} &middot; {{ agent.years_experience }} years experience</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      {% if agent.bio %}
+        <div style="max-width: 700px; margin-bottom: var(--space-5);">
+          <h3>About</h3>
+          <p>{{ agent.bio|linebreaksbr }}</p>
+        </div>
+      {% endif %}
+
+      <h2>Active Listings</h2>
+      {% if listings %}
+        <div class="property-grid">
+          {% for property in listings %}
+            {% include "properties/_property_card.html" %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <h3>No active listings right now</h3>
+          <p>Check back soon, or browse all available properties.</p>
+          <a href="{% url 'properties:list' %}" class="btn btn-outline">Browse Listings</a>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

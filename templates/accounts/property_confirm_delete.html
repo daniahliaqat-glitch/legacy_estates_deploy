@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Delete Listing — {{ SITE_NAME }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/auth.css' %}">{% endblock %}
+
+{% block content %}
+  <section class="auth-section">
+    <div class="auth-card">
+      <h2>Delete this listing?</h2>
+      <p>
+        You're about to permanently delete <strong>"{{ property.title }}"</strong>.
+        This cannot be undone — all photos and inquiries linked to it will be removed too.
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="flex gap-2">
+          <button type="submit" class="btn btn-danger">Yes, Delete It</button>
+          <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endblock %}

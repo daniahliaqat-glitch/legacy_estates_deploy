@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <span class="eyebrow">Legacy Estates &middot; Established Trust</span>
+        <h1>Find a place worth <em>building a life</em> around.</h1>
+        <p class="hero-sub">
+          Houses, apartments, plots, and commercial space — for sale or for rent.
+          Every listing vetted, every agent local, every deal handled with care.
+        </p>
+      </div>
+
+      <form class="search-card" action="{% url 'properties:list' %}" method="get">
+        <input
+          type="text" name="q" class="form-input"
+          placeholder="Search by city, neighborhood, or address"
+        >
+        <select name="listing_type" class="form-input">
+          <option value="">For Sale or Rent</option>
+          {% for value, label in listing_types %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+        <select name="property_type" class="form-input">
+          <option value="">Any Property Type</option>
+          {% for value, label in property_types %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-brass">Search</button>
+      </form>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <strong>{{ recent_properties|length }}+</strong>
+          <span>Active Listings</span>
+        </div>
+        <div class="hero-stat">
+          <strong>{{ top_agents|length }}+</strong>
+          <span>Local Agents</span>
+        </div>
+        <div class="hero-stat">
+          <strong>4</strong>
+          <span>Property Types</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="type-strip">
+      <a href="{% url 'properties:list' %}?property_type=house" class="type-chip">🏠 Houses</a>
+      <a href="{% url 'properties:list' %}?property_type=apartment" class="type-chip">🏢 Apartments</a>
+      <a href="{% url 'properties:list' %}?property_type=plot" class="type-chip">📐 Plots &amp; Land</a>
+      <a href="{% url 'properties:list' %}?property_type=commercial" class="type-chip">🏬 Commercial</a>
+      <a href="{% url 'properties:list' %}?listing_type=rent" class="type-chip">🔑 For Rent</a>
+      <a href="{% url 'properties:list' %}?listing_type=sale" class="type-chip">🏷️ For Sale</a>
+    </div>
+  </div>
+
+  {% if featured_properties %}
+  <section class="section-tight">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Handpicked</span>
+          <h2>Featured Properties</h2>
+        </div>
+        <a href="{% url 'properties:list' %}" class="btn btn-outline">View All Listings</a>
+      </div>
+
+      <div class="property-grid">
+        {% for property in featured_properties %}
+          {% include "properties/_property_card.html" %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section-tight" style="background: var(--white);">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Just Listed</span>
+          <h2>Recent Properties</h2>
+        </div>
+      </div>
+
+      {% if recent_properties %}
+        <div class="property-grid">
+          {% for property in recent_properties %}
+            {% include "properties/_property_card.html" %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <h3>No properties listed yet</h3>
+          <p>Check back soon — new listings are added regularly.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if top_agents %}
+  <section class="section-tight">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Meet The Team</span>
+          <h2>Our Agents</h2>
+        </div>
+        <a href="{% url 'accounts:agent_list' %}" class="btn btn-outline">View All Agents</a>
+      </div>
+
+      <div class="agent-grid">
+        {% for agent in top_agents %}
+          <a href="{% url 'accounts:agent_detail' agent.pk %}" class="agent-card">
+            {% if agent.headshot %}
+              <img src="{{ agent.headshot.url }}" alt="{{ agent }}" class="agent-photo">
+            {% else %}
+              <div class="agent-photo"></div>
+            {% endif %}
+            <h4>{{ agent.user.get_full_name|default:agent.user.username }}</h4>
+            <div class="agent-title">{{ agent.title }}</div>
+            <div class="agent-meta">{{ agent.years_experience }} yrs experience</div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="cta-band">
+        <div>
+          <h2>Thinking of selling or renting out a property?</h2>
+          <p>Talk to one of our agents and get it listed the right way.</p>
+        </div>
+        <a href="{% url 'inquiries:contact' %}" class="btn btn-primary">Contact an Agent</a>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

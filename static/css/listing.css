@@ -1,0 +1,42 @@
+/* ===================================================================
+   LISTING PAGE — sidebar filters + results grid
+   =================================================================== */
+
+.listing-header {
+  background: var(--ink);
+  color: var(--ivory);
+  padding: var(--space-5) 0 var(--space-4);
+}
+.listing-header h1 { color: var(--ivory); margin-bottom: 0; }
+.listing-header .eyebrow { color: var(--brass-light); }
+
+.listing-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-4);
+  padding: var(--space-5) 0 var(--space-6);
+  align-items: start;
+}
+
+.filter-panel {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  position: sticky;
+  top: 90px;
+}
+
+.results-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  font-size: 0.9rem;
+  color: var(--slate);
+}
+
+@media (max-width: 900px) {
+  .listing-layout { grid-template-columns: 1fr; }
+  .filter-panel { position: static; }
+}
