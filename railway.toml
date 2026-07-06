@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "python manage.py migrate --noinput && gunicorn legacy_estates.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+startCommand = "python manage.py migrate --noinput && python -m gunicorn legacy_estates.wsgi --bind 0.0.0.0:\$PORT --workers 2 --timeout 120"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
